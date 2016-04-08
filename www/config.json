@@ -1,0 +1,25 @@
+{
+	"server":"http://192.168.1.121/smartroommobiledata",
+	"imagelocation":"/images/www/floorplan",
+	"loginurl":"/Mobile/Authenticate/",
+	"myreservation":"/Mobile/Reservations",
+	"scheduleinfo":"/Mobile/Schedule",
+	"cancelschedule":"/Mobile/CancelReservation",
+	"confirmschedule":"/Mobile/ConfirmReservation",
+  "extendmeeting": "/Mobile/ExtendResource",
+	"endschedule":"/Mobile/EndReservation",
+	"search":"/Mobile/AvailableResources",
+	"reserve":"/Mobile/ReserveResource",
+	"allroom":"/Mobile/Rooms",
+	"qrcode":"/Mobile/QR",
+  	"site": "/Mobile/Sites",
+  	"floor": "/Mobile/Floors",
+  	"scheduleslot": "/Mobile/ScheduleSlots",
+	"simulate": false,
+	"landingpageoptions":
+		[{"displayName":"Rooms","value":"tab.home"},
+		{"displayName":"Reservations","value":"tab.reservation"},
+		{"displayName":"Scan","value":"tab.scan"},
+		{"displayName":"New Booking","value":"tab.search"},
+		{"displayName":"Settings","value":"tab.setting"}]
+}
