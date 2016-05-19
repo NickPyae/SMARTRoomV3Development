@@ -6,9 +6,10 @@ angular.module('app.services', [])
 	self.starting = 'starting';
 	self.pending = 'pending';
 	self.roomList = [];
+  self.reservedScheduleID = null;
 	self.reservedRoomList = [];
 	function roomInfo(rHostName, rId, rName, rImg, rStatus, rMeetingInfo, rMeetingStart, rMeetingEnd, rReservedDate, rLocationId,
-					  rSiteName, rSeatingCapacity, rFloorplan, rFloorName, rGroup){
+					  rSiteName, rSeatingCapacity, rFloorplan, rFloorName, rGroup, xLocation, yLocation){
 		var room={};
     room.hostname = rHostName;
 		room.id =rId;
@@ -25,10 +26,12 @@ angular.module('app.services', [])
 		room.floorplanImg = rFloorplan;
 		room.floorName = rFloorName;
     room.group = rGroup;
+    room.xLocation = xLocation;
+    room.yLocation = yLocation;
 		return room;
 	}
 
-	function roomDetails(rId, rName, rLocation, rSiteID, rSeating, rTimeslots, rImg, rFloor, rFloorName){
+	function roomDetails(rId, rName, rLocation, rSiteID, rSeating, rTimeslots, rImg, rFloor, rFloorName, xLocation, yLocation){
 		var _room ={};
 		_room.id = rId;
 		_room.name = rName;
@@ -42,6 +45,8 @@ angular.module('app.services', [])
 		_room.img = rImg;
 		_room.floor = rFloor;
     _room.floorName = rFloorName;
+    _room.xLocation = xLocation;
+    _room.yLocation = yLocation;
 		return _room;
 	}
 
@@ -70,7 +75,8 @@ angular.module('app.services', [])
 		_details.email = a.email;
 		return _details;
 	}
-	function meetingDetails(mId, mMeetingName, mRoomName, mLocation, mSiteID, mStatus, mStart, mEnd, mImg, mFloor, mAttendees, floorName, mReservedDate){
+
+	function meetingDetails(mId, mMeetingName, mRoomName, mLocation, mSiteID, mStatus, mStart, mEnd, mImg, mFloor, mAttendees, floorName, mReservedDate, xLocation, yLocation){
 		var _meeting ={};
 		_meeting.id = mId;
 		_meeting.name = mMeetingName;
@@ -92,6 +98,8 @@ angular.module('app.services', [])
 		_meeting.end = mEnd;
     _meeting.floorName = floorName;
     _meeting.reservedDate = mReservedDate;
+    _meeting.xLocation = xLocation;
+    _meeting.yLocation = yLocation;
 
 		return _meeting;
 	}
@@ -139,7 +147,7 @@ angular.module('app.services', [])
 				        "email": "kaitlyn.kong@ebd.com"
 					}];
 	//for reservation-controller.js
-	self.getMeetingInfo=function(id){
+	self.getMeetingInfo = function(id){
 
 		// Get additional values from Reservations web service
 		var reservedRoomList = self.getReservedRoomList();
@@ -149,6 +157,8 @@ angular.module('app.services', [])
 		var siteName = null;
 		var floorplanImage = null;
     var floorName = null;
+    var xLocation = null;
+    var yLocation = null;
 
 		for(var index in reservedRoomList) {
 			if(reservedRoomList[index].id === id) {
@@ -157,6 +167,8 @@ angular.module('app.services', [])
 				siteName = reservedRoomList[index].siteName;
 				floorplanImage = reservedRoomList[index].floorplanImg;
         floorName = reservedRoomList[index].floorName;
+        xLocation = reservedRoomList[index].xLocation;
+        yLocation = reservedRoomList[index].yLocation;
 				break;
 			}
 		}
@@ -170,12 +182,11 @@ angular.module('app.services', [])
 		ServerConfig.getUrl(ServerConfig.scheduleInfo).then(function(res){
 
       var url = res + "?callback=JSON_CALLBACK&scheduleid=" + encodedScheduleId;
-      //var url = res + "?callback=JSON_CALLBACK&scheduleid=" + id;
 
-      console.log('Schedule Detail: ' + url);
+      console.log('Schedule detail url: ' + url);
+
 			$http.jsonp(url).
 				success(function (data, status, headers, config) {
-					console.log(JSON.stringify(data));
 					var m = data;
           var status = null;
 
@@ -191,17 +202,16 @@ angular.module('app.services', [])
 
 					var myQueriedMeeting = meetingDetails(m.id, m.schedulename, m.roomname,
 						siteName, siteID, status, tConvert(m.StartTime), tConvert(m.EndTime),
-								 roomImg, floorplanImage, m.Attendees, floorName, m.Date);
+								 roomImg, floorplanImage, m.Attendees, floorName, m.Date, xLocation, yLocation);
 
 					// meetingDetails with fake attendees.
         //var myQueriedMeeting = meetingDetails(m.id, m.schedulename, m.roomname,
         //	siteName, siteID, status, tConvert(m.StartTime), tConvert(m.EndTime),
-        //			 roomImg, floorplanImage, m.attendees, floorName, m.Date);
+        //			 roomImg, floorplanImage, m.attendees, floorName, m.Date, xLocation, yLocation);
 
 					def.resolve(myQueriedMeeting);
 				}).
 				error(function(data, status, headers, config) {
-					console.log('RoomService:failed to establish connection to server');
 					def.reject(data);
 				});
 		},function(errRes){
@@ -211,7 +221,7 @@ angular.module('app.services', [])
 		return def.promise;
 	};
 	//for home-controller.js to query
-	self.getRoomInfo= function(id){
+	self.getRoomInfo = function(id){
 		var def = $q.defer();
 
     var encodedUid = btoa(CredentialService.getUid());
@@ -229,6 +239,8 @@ angular.module('app.services', [])
 			var siteName = null;
 			var seatingCap = null;
 			var floorplanImage = null;
+      var xLocation = null;
+      var yLocation = null;
 
 			for(var index in roomList) {
 				if(roomList[index].id === id) {
@@ -237,6 +249,8 @@ angular.module('app.services', [])
 					siteName = roomList[index].siteName;
 					seatingCap = roomList[index].seatingCapacity;
 					floorplanImage = roomList[index].floorplanImg;
+          xLocation = roomList[index].xLocation;
+          yLocation = roomList[index].yLocation;
 					break;
 				}
 			}
@@ -244,14 +258,10 @@ angular.module('app.services', [])
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid +
         "&rid=" + encodedRid + "&FromDate=" + encodedFromDate;
 
-			/*var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid() +
-			"&rid=" + id;*/
-
-			console.log('ServerConfig.getScheduleSlotUrl ---> ' + url);
+      console.log('Room detailed info url: ' + url);
 
 			$http.jsonp(url)
 				.success(function (data, status, headers, config) {
-					console.log('ScheduleSlot: ' + JSON.stringify(data));
 
 					var myQueriedRoom = null;
 
@@ -259,13 +269,12 @@ angular.module('app.services', [])
 
 						 myQueriedRoom = roomDetails(r.id, r.name,
 							siteName, siteID, seatingCap, r.slots,
-							roomImg, floorplanImage, r.floorname);
+							roomImg, floorplanImage, r.floorname, xLocation, yLocation);
 					});
 
 					def.resolve(myQueriedRoom);
 				})
 				.error(function(errRes){
-					console.log(JSON.stringify(errRes));
 					def.reject(errRes);
 				});
 		});
@@ -286,14 +295,10 @@ angular.module('app.services', [])
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid +
         "&rid=" + encodedRid + "&FromDate=" + encodedFromDate;
 
-			/*var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid() +
-				"&rid=" + roomID + "&FromDate=" + useDate;*/
-
-			console.log('Get Slots ---> ' + url);
+      console.log('Get all slots url: ' + url);
 
 			$http.jsonp(url)
 				.success(function (data, status, headers, config) {
-					console.log('Slots: ' + JSON.stringify(data));
 
 					var roomSlots = null;
 
@@ -305,7 +310,6 @@ angular.module('app.services', [])
 					def.resolve(roomSlots);
 				})
 				.error(function(errRes){
-					console.log(JSON.stringify(errRes));
 					def.reject(errRes);
 				});
 		});
@@ -314,7 +318,7 @@ angular.module('app.services', [])
 	};
 
 	//for home-controller.js to query dashboard rooms
-	self.getAllRooms=function(){
+	self.getAllRooms = function(){
 		var def = $q.defer();
 
     var encodedUid = btoa(CredentialService.getUid());
@@ -322,11 +326,11 @@ angular.module('app.services', [])
 		ServerConfig.getUrl(ServerConfig.allRoom).then(function(res){
 
 			var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid;
-      //var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid();
-			console.log('self.getAllRooms ---> ' + url);
+
+      console.log('Get all rooms url: ' + url);
+
         	$http.jsonp(url)
         	.success(function (data, status, headers, config) {
-				//console.log(JSON.stringify(data));
 				var lstRooms =[];
 				var subject = null;
         var hostname = null;
@@ -340,14 +344,8 @@ angular.module('app.services', [])
 						if(r.nextschedule.length > 0) {
 							// nextschedule is missing starttime, endtime missing
 							// r.nextschedule will be array of object
-							console.log('NextSchedule --> ', JSON.stringify(r.nextschedule));
 
 							// Get next schedule name, start time & end time
-							//angular.forEach(r.nextschedule, function(nextSchedule) {
-							//	scheduleName = nextSchedule.schedulename;
-							//	startTime = formatHourMin(parseInt(nextSchedule.startTime));
-							//	endTime = formatHourMin(parseInt(nextSchedule.endTime));
-							//});
               subject = r.nextschedule[0].schedulename;
               hostname = r.nextschedule[0].username;
               startTime= formatHourMin(parseInt(r.nextschedule[0].startTime));
@@ -357,13 +355,12 @@ angular.module('app.services', [])
 							lstRooms.push
 							(
 								roomInfo(hostname, r.roomid, r.roomname, r.imagesrc, angular.lowercase(r.status), subject, tConvert(startTime), tConvert(endTime), '', r.siteid,
-									r.sitename, r.seatingcapacity, r.floorplan, r.floorname, '')
+									r.sitename, r.seatingcapacity, r.floorplan, r.floorname, '', r.xLocation, r.yLocation)
 
 							);
 						} else {
-              console.log('No Next Schedule => ', JSON.stringify(r));
 							lstRooms.push(roomInfo('', r.roomid, r.roomname, r.imagesrc, angular.lowercase(r.status), '', '', '', '', r.siteid, r.sitename,
-								r.seatingcapacity, r.floorplan, r.floorname, ''));
+								r.seatingcapacity, r.floorplan, r.floorname, '', r.xLocation, r.yLocation));
 						}
 					}
 				});
@@ -374,7 +371,7 @@ angular.module('app.services', [])
 				def.resolve(lstRooms);
 			})
 			.error(function(a,b,c,d){
-				console.log(JSON.stringify(a));
+
 				def.reject(a);
 			});
 		});
@@ -391,9 +388,8 @@ angular.module('app.services', [])
     ServerConfig.getUrl(ServerConfig.myReservation).then(function(res){
 
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid;
-      //var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid();
 
-      console.log('self.getMyReservationForSpecificRoom -> ', url);
+      console.log('Get reservation for specific room url: ' + url);
 
       var roomData = null;
       $http.jsonp(url)
@@ -405,11 +401,24 @@ angular.module('app.services', [])
             try{
               var reservedDate = getFormatReservedDate(r.date);
 
+              var roomList = self.getRoomList();
+
+              var xLocation = null;
+              var yLocation = null;
+
+              for(var index in roomList) {
+                if(roomList[index].id === r.roomid) {
+                  xLocation = roomList[index].xLocation;
+                  yLocation = roomList[index].yLocation;
+                  break;
+                }
+              }
+
               //use scheduleid instead of roomid
               // roomInfo has reservation date
               lstRooms.push(
                 roomInfo('', r.scheduleid, r.roomname, r.imgsrc, angular.lowercase(r.status), r.name, tConvert(r.starttime), tConvert(r.endtime), reservedDate, r.siteid,
-                  r.sitename, r.seatingcapacity, r.floorplan, r.floorname, r.Group)
+                  r.sitename, r.seatingcapacity, r.floorplan, r.floorname, r.Group, xLocation, yLocation)
               );
 
               //Lara 29Jan16: only catch the first reservation for this roomId
@@ -417,7 +426,7 @@ angular.module('app.services', [])
                 roomData = r;
               }
             }catch(err){
-              console.log(err);
+
             }
           });
 
@@ -427,7 +436,6 @@ angular.module('app.services', [])
           def.resolve(roomData);
         })
         .error(function(errRes){
-          console.log('failed to read config file');
           def.reject(errRes);
 
         });
@@ -437,7 +445,7 @@ angular.module('app.services', [])
     return def.promise;
   }
 	//for reservation-controller.js to query
-	self.getMyReservations=function(){
+	self.getMyReservations = function(){
 		var def = $q.defer();
 
     var encodedUid = btoa(CredentialService.getUid());
@@ -445,25 +453,36 @@ angular.module('app.services', [])
 		ServerConfig.getUrl(ServerConfig.myReservation).then(function(res){
 
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid;
-      //var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid();
 
-			console.log('Reservation URL: ' + url);
+			console.log('Get all reservations url: ' + url);
+
         	$http.jsonp(url)
 			.success(function (data, status, headers, config) {
-				console.log(JSON.stringify(data));
 				var lstRooms =[];
 				angular.forEach(data,function(r){
 					try{
             var reservedDate = getFormatReservedDate(r.date);
 
+            var roomList = self.getRoomList();
+
+            var xLocation = null;
+            var yLocation = null;
+
+            for(var index in roomList) {
+              if(roomList[index].id === r.roomid) {
+                xLocation = roomList[index].xLocation;
+                yLocation = roomList[index].yLocation;
+                break;
+              }
+            }
+
             //use scheduleid instead of roomid
             // roomInfo has reservation date
 						lstRooms.push(
 							roomInfo(r.hostname, r.scheduleid, r.roomname, r.imgsrc, angular.lowercase(r.status), r.name, tConvert(r.starttime), tConvert(r.endtime), reservedDate, r.siteid,
-								r.sitename, r.seatingcapacity, r.floorplan, r.floorname, r.Group)
+								r.sitename, r.seatingcapacity, r.floorplan, r.floorname, r.Group, xLocation, yLocation)
 						);
 					}catch(err){
-						console.log(err);
 					}
 				});
 
@@ -473,7 +492,6 @@ angular.module('app.services', [])
 				def.resolve(lstRooms);
 			})
 			.error(function(errRes,b,c){
-				console.log('failed to read config file');
 				def.reject(errRes);
 
 			});
@@ -531,7 +549,7 @@ angular.module('app.services', [])
 	}
 
 	//for search-controller.js
-	self.getAvailableRooms=function(_date, start, end, pax, floorID){
+	self.getAvailableRooms = function(_date, start, end, pax, floorID, scheduleID, equipmentID){
 		var def=$q.defer();
 		var useDate = formatDate(_date);
 
@@ -542,6 +560,11 @@ angular.module('app.services', [])
     var encodedStartTime = btoa(formatHourMin(start));
     var encodedEndTime = btoa(formatHourMin(end));
     var encodedFloorID = btoa(floorID);
+    var encodedEquipmentID = btoa(equipmentID);
+
+
+    //Saving scheduleID from reservedRoom
+    self.setReservedScheduleID(scheduleID);
 
 		ServerConfig.getUrl(ServerConfig.searchRoom).then(function(res){
 
@@ -551,22 +574,15 @@ angular.module('app.services', [])
         "&seatingcapacity=" + encodedCapacity +
         "&StartTime=" + encodedStartTime +
         "&EndTime=" + encodedEndTime +
-        "&Floor=" + encodedFloorID;
+        "&Floor=" + encodedFloorID +
+        "&Equipment=" + encodedEquipmentID;
 
-        //var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid() +
-        //	"&FromDate=" + useDate +
-        //	"&EndDate=" + useDate +
-        //	"&seatingcapacity=" + pax +
-        //	"&StartTime=" + formatHourMin(start) +
-        //	":00&EndTime=" + formatHourMin(end);
+			console.log('Search url: ' + url);
 
-			console.log('Search URL: ' + url);
 			$http.jsonp(url)
 			.success(function (data, status, headers, config) {
 				var rooms = data;
 				var lstRoom = [];
-
-				console.log('Available Rooms: ' + JSON.stringify(rooms));
 
 				angular.forEach(rooms, function(r){
 
@@ -574,7 +590,7 @@ angular.module('app.services', [])
 					(
 						roomDetails(r.roomid, r.roomname,
 								r.sitename, r.siteid, r.seatingcapacity, null,
-								 r.imagesrc, r.floorplan, r.floorname)
+								 r.imagesrc, r.floorplan, r.floorname, r.xLocation, r.yLocation)
 					);
 
 				});
@@ -587,8 +603,9 @@ angular.module('app.services', [])
 
 		return def.promise;
 	};
+
 	//for reservation-controller.js to query
-	self.manageMeeting=function(id, start, cancel, end){
+	self.manageMeeting = function(id, start, cancel, end){
 		var def= $q.defer();
 		var useUrl;
 		if(cancel){
@@ -609,28 +626,17 @@ angular.module('app.services', [])
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid +
         "&scheduleid=" + encodedScheduleID;
 
-			/*var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid() +
-			"&scheduleid=" + id;*/
-
-      console.log(url);
+      console.log('Manage meeting url: ' + url);
 
 			$http.jsonp(url).
 				success(function (data, status, headers, config) {
-        console.log('self.manageMeeting: ' + JSON.stringify(data));
 					def.resolve(data);
 				}).
 				error(function(data, status, headers, config){
-					console.log('failed to connect to server');
 					def.reject(errRes);
 				});
 		},function(errRes){
-			if(errRes.simulate){
-				def.resolve();
-			}else{
-				console.log('failed to read config file');
-				def.reject(errRes);
-			}
-
+      def.reject(errRes);
 		});
 
 		return def.promise;
@@ -644,41 +650,31 @@ angular.module('app.services', [])
 		var b="";
 		var assignedLast=false;
 		//tabulate slots
-		angular.forEach(slots,function(s){
+		angular.forEach(slots,function(s) {
 			//try and get stretches of time
-			if(s.checked){
+			if(s.checked) {
 				isChecked=true;
-				if(b!="" && b==s.start){
+				if(b!="" && b==s.start) {
 					//this.start == prev.end
 					b=s.end;
-					console.log('b is NOT empty, assign new->' + b);
-				}else{
+				} else {
 					//previous wasn't selected || this.start != prev.end;
 					//this slot can't be linked, throw out b, create new slot
 					useSlot +=b + "</li>";
 
-					console.log('b is NOT SAME, throw->' + b);
 					b=s.end;
-					console.log('b is EMPTY, assign new->' + b);
-					/*if(useSlot!="")
-						useSlot+="<br>";*/
 
 					useSlot += "<li>" + s.start + " to ";
 
 				}
 				assignedLast=false;
 
-
-			}else{
-				console.log('slot NOT checked->' + JSON.stringify(s));
+			} else {
 				//this slot can't be linked, throw out b, create new slot
 				useSlot +=b + "</li>";
 				assignedLast=true;
 				b="";//reset b
 			}
-
-
-			console.log('useSlot is->' + useSlot);
 		});
 
 		if(!assignedLast){
@@ -691,10 +687,11 @@ angular.module('app.services', [])
 		//return
 		return "Time Slot(s): <b>" + useSlot + "</b>";
 	},
-    //general reservation
-	self.reserveRoom=function(id, _date, start, end, name){
+
+  // Reserving room
+	self.reserveRoom = function(id, _date, start, end, name){
 		var def=$q.defer();
-		console.log(JSON.stringify({d:_date, s:start, e:end, n:name}));
+
 		//var useDate = formatDate_YYYY(_date);
 		var url = null;
     try
@@ -710,60 +707,88 @@ angular.module('app.services', [])
       def.reject("Invalid characters not allowed");
     }
 
-
 		ServerConfig.getUrl(ServerConfig.reserveRoom).then(function(res){
 
+      if(self.getReservedScheduleID()) {
+        var encodedScheduleID = btoa(self.getReservedScheduleID());
 
-			url = res + "?callback=JSON_CALLBACK&UserId=" + encodedUid +
-				"&StartDate=" + encodedStartDate +
-				"&EndDate=" + encodedEndDate +
-				"&StartTime=" + encodedStartTime +
-				"&EndTime=" + encodedEndTime +
-				"&subject=" + encodedSubject +
-				"&RoomId=" + encodedRid;
+        url = res + "?callback=JSON_CALLBACK&UserId=" + encodedUid +
+          "&StartDate=" + encodedStartDate +
+          "&EndDate=" + encodedEndDate +
+          "&StartTime=" + encodedStartTime +
+          "&EndTime=" + encodedEndTime +
+          "&subject=" + encodedSubject +
+          "&RoomId=" + encodedRid +
+          "&oid=" + encodedScheduleID;
+      } else {
+        url = res + "?callback=JSON_CALLBACK&UserId=" + encodedUid +
+          "&StartDate=" + encodedStartDate +
+          "&EndDate=" + encodedEndDate +
+          "&StartTime=" + encodedStartTime +
+          "&EndTime=" + encodedEndTime +
+          "&subject=" + encodedSubject +
+          "&RoomId=" + encodedRid;
+      }
 
-			/*url = res + "?callback=JSON_CALLBACK&UserId=" + CredentialService.getUid() +
-				"&StartDate=" + _date +
-				"&EndDate=" + _date +
-				"&StartTime=" + start +
-				"&EndTime=" + end +
-				"&subject=" + name +
-				"&RoomId=" + id;*/
-
-			console.log('Reservation URL: ' + url);
-
+			console.log('Reserve room url: ' + url);
 
 				$http.jsonp(url)
 					.success(function (data, status, headers, config) {
 						if (data.success === true)
 						{
-							console.log('StartTime: ' + start);
-							console.log('EndTime: ' + end);
-							console.log('StartDate: ' + _date);
-							console.log('EndDate: ' + _date);
-							console.log('Reserved ---> ' + JSON.stringify(data));
+              self.setReservedScheduleID(null);
 							def.resolve();
 						}else{
-							console.log('Reserved Room Failed --> ' + JSON.stringify(data));
 							def.reject(JSON.stringify(data));
 						}
 					})
 					.error(function(errRes, status, headers, config){
-						console.log('failed to connect to server');
-            console.log(errRes);
-            console.log(status);
 						def.reject(errRes);
 					});
 		},function(errRes){
-			if(errRes.simulate){
-				def.resolve();
-			}else{
-				console.log('failed to read config file');
-				def.reject(errRes);
-			}
+      def.reject(errRes);
 		});
 		return def.promise;
 	};
+
+  self.updateSubject = function(id, _date, start, end, subject){
+    var def = $q.defer();
+
+    try
+    {
+      var encodedUid = btoa(CredentialService.getUid());
+      var encodedSubject = btoa(subject);
+      var encodedScheduleId = btoa(id);
+    }catch(err){
+      def.reject("Invalid characters not allowed");
+    }
+
+    ServerConfig.getUrl(ServerConfig.updateReservation).then(function(res){
+
+      var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid +
+        "&subject=" + encodedSubject +
+        "&scheduleid=" + encodedScheduleId;
+
+      console.log('Updating subject url: ' + url);
+
+      $http.jsonp(url)
+        .success(function (data, status, headers, config) {
+          if (data.success === true)
+          {
+            def.resolve();
+          }else{
+            def.reject(JSON.stringify(data));
+          }
+        })
+        .error(function(errRes, status, headers, config){
+          def.reject(errRes);
+        });
+    });
+
+    return def.promise;
+
+  };
+
 	//Helper Functions for Rooms
 	self.getImageUrl=function(){
 		return ServerConfig.getImageUrl();
@@ -813,10 +838,8 @@ angular.module('app.services', [])
     }
 
 		if(angular.lowercase(status) == self.started){
-			console.log('RoomSErvice.isStarted():' + JSON.stringify({statusIs: status, compIs: self.started}));
 			return true;
 		}else{
-			console.log('RoomSErvice.isStarted():' + JSON.stringify({statusIs: status, compIs: self.starting}));
 			return false;
 		}
 	};
@@ -831,12 +854,10 @@ angular.module('app.services', [])
         var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid + "&rid= " +
           encodedRid;
 
-        	/*var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid() + "&rid= " +
-				roomID;*/
+        console.log('QR url: ' + url);
 
         	$http.jsonp(url)
 			.success(function (data, status, headers, config) {
-				console.log('QR Service --> ' + JSON.stringify(data));
 				def.resolve(data);
 			})
 			.error();
@@ -847,6 +868,14 @@ angular.module('app.services', [])
 		return def.promise;
 	};
 
+
+  self.getReservedScheduleID = function() {
+      return self.reservedScheduleID;
+  }
+
+  self.setReservedScheduleID = function(scheduleID) {
+    self.reservedScheduleID = scheduleID;
+  }
 
 	/** Nick */
 	self.getRoomList = function() {
@@ -871,22 +900,20 @@ angular.module('app.services', [])
 		doEvent(type,data);
 	};
 	//for tab-controller.js
-	self.newSearch=function(){
+	self.newSearch = function(){
 		$rootScope.$broadcast('search.refresh');
 	}
 	$rootScope.$on('event.success',function(event, curr){
-		console.log('event.success.received! curr is->' + curr);
 		doEvent(curr);
 
 	});
 
 	self.goHome=function(){
-		console.log('can go home?');
 		AppConfigService.getPreferredLandingPageState().then(function(res){
-			console.log('go.Home->' + res);
+
 			$state.go(res);
 		},function(err){
-			console.log(JSON.stringify(err));
+
 		});
 	};
 
@@ -920,11 +947,9 @@ angular.module('app.services', [])
 //this service handles all the credential storage, log in, log out
 	    var self = this;
 	    self.isInit=false;
-	    //self.username=null;
-	    //self.displayName=null;
+
 	    self.isLoggedIn = function(){
-	        console.log("self.uid is->" + self.getUid());
-	        console.log("self.getDisplayName is->" + self.getDisplayName());
+
 	        var id= self.getUid();
 	        if(id == '' || id == null || id=='undefined'){
 	        	return false;
@@ -986,28 +1011,19 @@ angular.module('app.services', [])
 	    	if(ret =="" || ret == null){
 	    		ret = localStorage.serverip;
 	    	}
-
-	    	console.log('serverip from localStorage is->' + ret);
 	    	return ret;
 	    };
 	    //auth sets Uid/DisplayName
 	    self.auth=function(username,password,ip, isHTTPSEnabled){
 
         //Lara 10Feb16: this portion is redundant, every re-authentication, the user must specify protocol
-        //var isHttps = localStorage.getItem("isHttps");
-
-        //if(isHttps || isHTTPSEnabled) {
-        console.warn("@CredentialService.auth(): isHTTPEnabled->%s", isHTTPSEnabled.toString());
         var  http = self.getHttpProtocol(isHTTPSEnabled);
 
-
 	    	var def= $q.defer();
-	        var url="";//get frin ServerConfig
-	        //var url = $scope.httpprotocol + "://" + $scope.baseURL + ":" + $scope.port + $scope.basePath + $scope.authenticate + "?callback=JSON_CALLBACK&UserId=" + username + "&StartDate=" + new Date() + "&Password=" + password ;
 
         // Server address appended by following path
         var _ip = http + '://' + ip + '/smartroommobiledata';
-        //console.warn("_ip is->%s",_ip);
+
         ServerConfig.setIpAddr(_ip).then(function(res){//pass ip down to server config
 	        	ServerConfig.getUrl(ServerConfig.login).then(function(res){
 
@@ -1018,14 +1034,13 @@ angular.module('app.services', [])
                 def.reject({success:false});
               }
               var url = res + "?callback=JSON_CALLBACK&UserId=" + encodedUsername + "&Password=" + encodedPassword ;
-              //var url = res + "?callback=JSON_CALLBACK&UserId=" + username + "&Password=" + password ;
+
+              console.log('Login url: ' + url);
 
               $http.jsonp(url).
 						success(function (data, status, headers, config) {
-							console.log('Login: ' + JSON.stringify(data));
 							if (data.success === true) {
-								//return username for display?
-								console.log('auth: data.success');
+
 								localStorage.setItem("username", username);
 								localStorage.setItem("name", data.name);
 								localStorage.setItem('password', password);
@@ -1040,7 +1055,6 @@ angular.module('app.services', [])
 							}
 							else
 							{
-								console.log('reject credentials');
 								def.reject({success:false});
 							}
 						}).
@@ -1050,31 +1064,23 @@ angular.module('app.services', [])
 							def.reject({success:false, error: status, data:data});
 						});
 				},function(errRes){
-					if(errRes.simulate){
-						console.log('is simulate self.auth');
-						def.resolve({success:true, name:username});
-					}else{
-						alert('unable to get login url from server config');
-						def.reject({success:false, error:JSON.stringify(errRes)});
-					}
+              def.reject({success:false, error:JSON.stringify(errRes)});
 				});
 
-
 	        },function(errRes){
-	        	alert('unable to save ip addr');
+
 				def.reject({success:false, error:JSON.stringify(errRes)});
 	        });
 
 			return def.promise;
 	    };
 
-	    self.init=function(){
-	    	console.log('CredentialService.init()!');
+	    self.init = function(){
 	    	ServerConfig.init(self.getIp());
 	    	self.isInit=true;
 	    }
-	    self.logout=function(){
-          console.log('Logging out. Clearing all local storage!');
+
+	    self.logout = function(){
 			    resetCredentials();
 	    };
 
@@ -1104,9 +1110,7 @@ angular.module('app.services', [])
 	self.isInit=false;
 
 
-	function requestFilterOptions(){
-
-		console.log('@AppConfigService.requestFilterOptions()!');
+	function requestFilterOptions() {
 		var def= $q.defer();
 
 		ServerConfig.getFloorUrl(ServerConfig.floor).then(function(res){
@@ -1115,9 +1119,8 @@ angular.module('app.services', [])
       var encodedUid = btoa(CredentialService.getUid());
 
       var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid;
-      //var url = res + "?callback=JSON_CALLBACK&userid=" + CredentialService.getUid();
 
-			console.log('ServerConfig.getFloorUrl ---> ' + url);
+			console.log('Floor url: ' + url);
 
 			var siteSettingList = [];
 			var floorSettingList = [];
@@ -1173,6 +1176,43 @@ angular.module('app.services', [])
 		return def.promise;
 	}
 
+  function requestAllEquipments() {
+      var def = $q.defer();
+
+      var equipmentsList = [];
+
+      ServerConfig.getEquipmentUrl(ServerConfig.equipment).then(function(res) {
+
+        MaskFac.loadingMask(true, 'Loading');
+
+        var encodedUid = btoa(CredentialService.getUid());
+
+        var url = res + "?callback=JSON_CALLBACK&userid=" + encodedUid;
+
+        console.log('Equipments url: ' + url);
+
+        $http.jsonp(url).success(function (data, status, headers, config) {
+
+          equipmentsList.push({displayName: "Any", value: "", equipmentID: ""});
+
+          for(var index in data) {
+            equipmentsList.push({displayName: data[index].name, value: data[index].name, equipmentID: data[index].id});
+          }
+
+          def.resolve(equipmentsList);
+
+          MaskFac.loadingMask(false);
+        }).error(function(data, status, headers, config) {
+
+          MaskFac.loadingMask(false);
+
+          def.reject({success:false, error: status, data:data});
+        });
+      });
+
+    return def.promise;
+  }
+
 
 	function requestLandingPageOptions(){
 		var def= $q.defer();
@@ -1191,7 +1231,6 @@ angular.module('app.services', [])
 		if(val){
 			angular.forEach(arr,function(op){
 				if(op.value == val){
-					console.log('found ' + op.value);
 					ret = op;
 				}
 			});
@@ -1200,7 +1239,6 @@ angular.module('app.services', [])
 	}
 
 	function retrieveFilters() {
-		console.log('AppConfigService.retrievingAppConfig()');
 		//fill defaults if setting not found
 		var _site = retrieveSettings(keys.keyFilterSite);
 		var _level = retrieveSettings(keys.keyFilterLevel);
@@ -1210,20 +1248,17 @@ angular.module('app.services', [])
 			level: jsonSearch(self.filterOptions.level, _level)
 		};
 
-		console.log('filter->' + JSON.stringify(self.filter));
 	};
 
 	function retrieveLandingPage(){
-		console.log('AppConfigService.retrievingAppConfig()');
 		//fill defaults if setting not found
 
 		var _landing = retrieveSettings(keys.keyLandingPage);
 
 		self.landingPage= jsonSearch(self.landingPageOptions, _landing);
 
-		console.log('landingpage->' + JSON.stringify(self.landingPage));
-
 	}
+
 	function storeSettings(n,v){
 		localStorage.setItem(n, v);
 		localStorage[n]=v;
@@ -1238,6 +1273,7 @@ angular.module('app.services', [])
 	}
 
 	this.prepareFilter = function() {
+
 		var def= $q.defer();
 
 		requestFilterOptions().then(function(){
@@ -1251,18 +1287,30 @@ angular.module('app.services', [])
 		return def.promise;
 	};
 
+  this.prepareEquipment = function() {
+
+    var def = $q.defer();
+
+    requestAllEquipments().then(function(equipmentsList){
+
+      def.resolve(equipmentsList);
+    },function(err){
+      def.reject(err);
+    });
+
+    return def.promise;
+
+  };
+
 	function init(){
-		console.log('AppConfigService.init()!');
 		var def= $q.defer();
 
     requestLandingPageOptions().then(function(){
-      console.log(self.landingPageOptions);
+
       retrieveLandingPage();
       self.isInit=true;
-      console.log('AppConfigService.self.isInit: true')
       def.resolve();
     },function(errLanding){
-      //console.log(JSON.stringify(errLanding));
       def.reject(errLanding);
     });
 
@@ -1297,21 +1345,17 @@ angular.module('app.services', [])
 		storeSettings(keys.keyLandingPage, landing);
 		storeSettings(keys.keyFilterSite, site);
 		storeSettings(keys.keyFilterLevel, level);
-		console.log('**check save***');
 		retrieveLandingPage();
 		retrieveFilters();
 	};
 
 	self.getPreferredLandingPageState=function(){
-		console.log("@AppConfigService.getPreferredLandingPageState()")
 		var def=$q.defer();
 		if(self.landingPage){
-			console.log("@AppConfigService is init, return landingpage value");
 			def.resolve(self.landingPage.value);
 
 		}
 		else{
-			console.log("@AppConfigService requires init");
 			init().then(function(){
 				def.resolve(self.landingPage.value);
 			});
@@ -1326,17 +1370,12 @@ angular.module('app.services', [])
 		}
 		 if(!self.isInit){
 			init().then(function(){
-				console.log('hasFilter is recurssing after init');
 
 				self.hasFilter(def);
 			});
 		}else if((self.filter.site && self.filter.site.value) || (self.filter.level && self.filter.level.value)){
-			console.log('hasFilter resolved, true');
-			console.log('siteFilter->' + JSON.stringify(self.filter.site));
-			console.log('levelFilter->' + JSON.stringify(self.filter.site))
 			def.resolve(true);
 		}else{
-			console.log('hasFilter resolved, false');
 			def.resolve(false);
 		}
 		return def.promise;
@@ -1344,7 +1383,6 @@ angular.module('app.services', [])
 
 
 	$rootScope.$on('deviceReady',function(){
-		console.log("AppConfigService deviceReady!");
 		init();
 	});
 });

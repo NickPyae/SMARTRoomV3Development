@@ -30,7 +30,6 @@
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"
     },
-    "cordova-plugin-crosswalk-webview",
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [

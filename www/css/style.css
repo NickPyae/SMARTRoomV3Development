@@ -57,10 +57,8 @@
 	border:0px;
 }
 .roomCard .roomThumbNail{
-	/*height:150px;*/
-  /*height:89px;*/
-  height:140px;
-	width:148px;
+	width: 148px;
+  height: 110px;
 	display:block;
 }
 

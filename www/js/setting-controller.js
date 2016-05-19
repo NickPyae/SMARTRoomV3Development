@@ -52,7 +52,6 @@ app.controller('SettingCtrl',function($scope, $ionicHistory, $state, $stateParam
 		$scope.user.password = CredentialService.getPassword();
 		$scope.user.server = CredentialService.getIp();
     $scope.user.checked=CredentialService.isHttpsEnabled();
-    console.warn($scope.user);
 
 		$scope.saveSettings = function () {
       if($scope.user.username && $scope.user.password && $scope.user.server) {
@@ -60,10 +59,8 @@ app.controller('SettingCtrl',function($scope, $ionicHistory, $state, $stateParam
         MaskFac.loadingMask(true, 'Saving settings');
         CredentialService.auth($scope.user.username, $scope.user.password, $scope.user.server, $scope.user.checked)
         .then(function (res) {
-          console.log('@AppSettingsCtrl: credentialservice.auth.success:' + JSON.stringify(res));
           MaskFac.loadingMask(false);
           //Lara 10Feb16: since CredentialService.auth already saves the credentials on success, this extra step of saving is not required.
-          //CredentialService.saveCredentials($scope.user.username, $scope.user.password, $scope.user.server,$scope.user.isHTTPSEnabled);
           MaskFac.showMask(MaskFac.success, "Credentials saved.");
           $scope.validated = true;
 

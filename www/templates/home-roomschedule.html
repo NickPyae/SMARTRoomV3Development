@@ -28,6 +28,7 @@
 		  </ion-slide>
 		  <ion-slide>
         <!--LARA 11Feb16: added fullscreen toggle-->
+        <button ng-hide="room.xLocation === -1 && room.yLocation === -1" ng-style="{'position':'absolute', 'left': room.xLocation + 'px', 'top': room.yLocation + 'px'}" class="button-balanced button-icon icon ion-android-pin balanced" ng-click="fullScreen(getImage(room.siteID, room.floor))"></button>
 			  <img ng-src="{{getImage(room.siteID , room.floor)}}" class="slide-img" ng-click="fullScreen(getImage(room.siteID, room.floor))"/>
 		  </ion-slide>
 		</ion-slide-box>

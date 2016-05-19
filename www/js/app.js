@@ -90,7 +90,7 @@ app.run(function($ionicPlatform, CredentialService, ServerConfig, AppConfigServi
         });
 
         push.on('registration', function(data) {
-          console.log('Device Token: ' + data.registrationId);
+          console.log('Token: ' + data.registrationId);
         });
 
         push.on('notification', function(data) {
@@ -99,7 +99,7 @@ app.run(function($ionicPlatform, CredentialService, ServerConfig, AppConfigServi
           if(data.additionalData.foreground) {
 
             $ionicPopup.alert({
-              title: 'SMARTRoom Notification',
+              title: 'SMARTROOM Notification',
               template: data.message
             });
           }
@@ -211,6 +211,13 @@ app.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider, $i
     .state('tab.search',{
       url: "/search",
       cache:false,
+      params: {
+        scheduleID: null,
+        meetingStart: null,
+        meetingEnd: null,
+        meetingDate: null,
+        meetingSubject: null
+      },
       views:{
         'tab-search': {
           templateUrl: "./templates/search.html",

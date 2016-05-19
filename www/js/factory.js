@@ -18,15 +18,9 @@ angular.module('app.factories', [])
         console.log('SERVER: ' + config.server);
       }
 
-			if(config.simulate){
-				//set image url
-				config.server ="";
-				config.imageurl="./img/";
-				config.imagelocation="./img/";
-			}
 			def.resolve();
 		},function(errRes){
-			def.reject("unable to retrieve config from json");
+			def.reject(errRes);
 		});
 		return def.promise;
 	}
@@ -39,6 +33,7 @@ angular.module('app.factories', [])
 		scheduleInfo:"scheduleinfo",
 		startMeeting: "confirmschedule",
 		endMeeting:"endschedule",
+    updateReservation: "updatereservation",
 		cancelMeeting:"cancelschedule",
     extendMeeting: "extendmeeting",
 		searchRoom: "search",
@@ -47,33 +42,24 @@ angular.module('app.factories', [])
 		qrCode: "qrcode",
 		site: "site",
 		floor: "floor",
+    equipment: "equipment",
 		scheduleslot: "scheduleslot",
 		init:function(ip){
 			var def=$q.defer();
 
 			retrieveConfig(ip).then(function(){
-				//set config
-				//console.log('ServerConfig.init(): config.server->'+ config.server);
-				//getip
 				imageUrl = config.server + config.imagelocation;
 			});
 			return def.promise;
 		},
 		setIpAddr:function(ip){
 			var def = $q.defer();
-			if(config.simulate){
-				//console.log('is simulate setIpAddr');
-				config.server="";
-				def.resolve();
-			}else{
-				if(ip){
-          config.server = ip;
-					console.log('ServerConfig.setIpAddr(): config.server is->' + config.server);
-					def.resolve();
-				}else{
-					def.reject();
-				}
-			}
+      if(ip){
+        config.server = ip;
+        def.resolve();
+      }else{
+        def.reject();
+      }
 
 			return def.promise;
 		},
@@ -90,15 +76,12 @@ angular.module('app.factories', [])
 		getLoginUrl:function(){
 			var def = $q.defer();
 			if(config.loginurl && config.loginurl != ''){
-				console.log('getLoginUrl from memory');
 				def.resolve(config.server + config.loginurl);
 			}else{
-				console.log('getLoginUrl from config');
 				retrieveConfig(config.server).then(function(){
-					//console.log('return imageUrl->' + config.serverprotocol + "://" + config.serverip + ":" + config.serverport + "/SMARTRoomMobile/images/www/floorplan/1/");
 					def.resolve(config.server + config.loginurl);
 				},function(errRes){
-					console.log(errRes);
+					def.reject(errRes);
 				});
 			}
 			return def.promise;
@@ -122,35 +105,26 @@ angular.module('app.factories', [])
 		},
 		getUrl:function(type){
 			var def = $q.defer();
-			if(config.simulate){
-				def.reject({simulate:true});
-			}else{
-				if(config[type] && config[type] != ''){
-					console.log('getUrl for: ' + type + ' from memory');
-					def.resolve(config.server + config[type]);
-				}else{
-					console.log('getUrl for: ' + type + ' from config');
-					retrieveConfig(config.server).then(function(){
-						def.resolve(config.server + config[type]);
-					},function(errRes){
-						console.log(errRes);
-					});
-				}
-			}
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else{
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
 			return def.promise;
 		},
 		getLandingPageOption:function(){
-			console.log('ServerConfig.getLandingPageOption()');
 			var def = $q.defer();
 			if(config["landingpageoptions"] && config["landingpageoptions"] != ''){
-				console.log('getLandingPageOption from memory');
 				def.resolve(config["landingpageoptions"]);
 			}else{
-				console.log('getLandingPageOption from config');
 				retrieveConfig(config.server).then(function(){
 					def.resolve(config["landingpageoptions"]);
 				},function(errRes){
-					console.log(errRes);
+          def.reject(errRes);
 				});
 			}
 			return def.promise;
@@ -158,64 +132,81 @@ angular.module('app.factories', [])
 		getSiteUrl: function(type) {
 			var def = $q.defer();
 
-			if(config.simulate){
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else {
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
 
-				def.reject({simulate:true});
-			}else{
-				if(config[type] && config[type] != ''){
-					def.resolve(config.server + config[type]);
-				}else {
-					retrieveConfig(config.server).then(function(){
-						def.resolve(config.server + config[type]);
-					},function(errRes){
-						console.log(errRes);
-					});
-				}
-			}
 			return def.promise;
 		},
 		getFloorUrl: function(type) {
 			var def = $q.defer();
 
-			if(config.simulate){
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else {
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
 
-				def.reject({simulate:true});
-			}else{
-				if(config[type] && config[type] != ''){
-					def.resolve(config.server + config[type]);
-				}else {
-					retrieveConfig(config.server).then(function(){
-						def.resolve(config.server + config[type]);
-					},function(errRes){
-						console.log(errRes);
-					});
-				}
-			}
 			return def.promise;
 		},
+    getEquipmentUrl: function(type) {
+      var def = $q.defer();
+
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else {
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
+
+      return def.promise;
+    },
+    getUpdateReservationUrl: function(type) {
+      var def = $q.defer();
+
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else {
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
+
+      return def.promise;
+    },
 		getScheduleSlotUrl: function(type) {
 			var def = $q.defer();
 
-			if(config.simulate){
+      if(config[type] && config[type] != ''){
+        def.resolve(config.server + config[type]);
+      }else {
+        retrieveConfig(config.server).then(function(){
+          def.resolve(config.server + config[type]);
+        },function(errRes){
+          def.reject(errRes);
+        });
+      }
 
-				def.reject({simulate:true});
-			}else{
-				if(config[type] && config[type] != ''){
-					def.resolve(config.server + config[type]);
-				}else {
-					retrieveConfig(config.server).then(function(){
-						def.resolve(config.server + config[type]);
-					},function(errRes){
-						console.log(errRes);
-					});
-				}
-			}
 			return def.promise;
 		}
 	};
 })
 .factory('BarcodeScanner',function($q){
-	console.log('factory.barcodeScanner init!');
 	return{
 		scan:function(){
 			var def = $q.defer();
@@ -291,17 +282,14 @@ angular.module('app.factories', [])
           template: '<div style="height:100%;width:100%"> <h2>' + title + '</h2><p>' + msg + '</p><br><p><button class="button button-positive" ng-click="'+ fnCall + '()">Yes</button><button class="button button-default" ng-click="closeMask()">No</button></p>',
           noBackdrop: false
       	});
-      	console.log($ionicLoading);
     },
     loadingMask:function(show, msg){
       if(show){
-        //console.log('loadingMaske shown->' + new Date());
         $ionicLoading.show({
           template: '<img src="ajax-loader.gif"/>' + msg,
           noBackdrop: false
         });
       }else{
-        //console.log('loadingMaske hidden->' + new Date());
         $ionicLoading.hide();
       }
 

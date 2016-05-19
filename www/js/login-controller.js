@@ -66,7 +66,6 @@ app.controller('LoginCtrl',function($rootScope, $scope, $state, $timeout, MaskFa
 
 		CredentialService.auth(u,p,i, $scope.enableHTTPS.checked)
 		.then(function(res){
-			console.log('credentialservice.auth.success:' + JSON.stringify(res));
 
 			AppService.goHome();
 			MaskFac.loadingMask(false);

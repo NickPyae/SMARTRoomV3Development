@@ -8,10 +8,14 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
     }, false);
 
+    console.log('Params from reservation: ');
+    console.log($stateParams);
+
     prepareFilter();
 
     function prepareFilter() {
       MaskFac.loadingMask(true, 'Loading');
+
       AppConfigService.prepareFilter().then(function () {
 
         $scope.filterOptions = AppConfigService.filterOptions;
@@ -20,11 +24,27 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
           levelFilter: AppConfigService.filter.level,
           siteFilter: AppConfigService.filter.site
         };
+
         MaskFac.loadingMask(false);
       }, function (errRes) {
         MaskFac.loadingMask(false);
         MaskFac.showMask(MaskFac.error, 'Loading available floors failed');
       });
+
+      AppConfigService.prepareEquipment().then(function (equipmentsList) {
+
+        $scope.equipments = equipmentsList;
+
+        $scope.selectedEquipment = {
+            item: $scope.equipments[0]
+        }
+
+        MaskFac.loadingMask(false);
+      }, function (errRes) {
+        MaskFac.loadingMask(false);
+        MaskFac.showMask(MaskFac.error, 'Loading available equipments failed');
+      });
+
     }
 
     $scope.recurringEvents = getRecurringEvents();
@@ -53,6 +73,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     }
 
     $scope.options = {};
+
     function getClosestHalf(now, plus) {
       var add = plus ? 1 : 0;
 
@@ -63,16 +84,54 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
       }
     }
 
+    function getRoomReservedTime(reservedRoomDate, time) {
+
+      var arr = getReservedDate(reservedRoomDate, time).split(/[- :]/);
+
+      var reservedTime = new Date(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5]);
+
+      return reservedTime;
+    }
+
+    function getReservedDate(reservedRoomDate, time) {
+      var hours = parseInt(time.substr(0, 2));
+
+      if(time.indexOf('AM') !== -1 && hours === 12) {
+        time = time.replace('12', '0');
+      }
+      if(time.indexOf('PM')  !== -1 && hours < 12) {
+        time = time.replace(hours, (hours + 12));
+      }
+
+      var newTime = time.replace(/(AM|PM)/, '');
+
+      var fullDate = reservedRoomDate.getFullYear() + '-' + reservedRoomDate.getMonth() + '-' +
+        reservedRoomDate.getDate() + ' ' + newTime + ':00';
+
+      return fullDate;
+    }
+
     $scope.$on('search.refresh', function () {
-      var now = new Date();
-      var _param = $stateParams.param;
-      $scope.options = {
-        //des:"abc",
-        date: now,
-        start: getClosestHalf(now, false),
-        end: getClosestHalf(now, true),
-        seats: 1
-      };
+      if($stateParams.scheduleID) {
+        var now = new Date($stateParams.meetingDate); // Reserved Date
+
+        $scope.options = {
+          date: now,
+          start: getRoomReservedTime(now, $stateParams.meetingStart), //Star Time
+          end: getRoomReservedTime(now, $stateParams.meetingEnd), //End Time
+          seats: 1
+        };
+      } else {
+        var now = new Date();
+
+        $scope.options = {
+          date: now,
+          start: getClosestHalf(now, false),
+          end: getClosestHalf(now, true),
+          seats: 1
+        };
+      }
+
     });
 
     $scope.progress = {
@@ -117,9 +176,19 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
 
     $scope.search = function (options) {
-      //$stateParams.param="true";
 
-      console.log('Recurring Event: ' + $scope.recurringEvents.event.frequency);
+      if($scope.selectedEquipment.item.value) {
+          options.equipmentID = $scope.selectedEquipment.item.equipmentID;
+      } else {
+          options.equipmentID = '';
+      }
+
+      if($stateParams.scheduleID) {
+        options.subject = $stateParams.meetingSubject;
+        options.scheduleID = $stateParams.scheduleID;
+      }
+
+      //console.log('Recurring Event: ' + $scope.recurringEvents.event.frequency);
       if (!$scope.userSettings.levelFilter.value) {
         options.floorID = '';
       } else {
@@ -131,15 +200,17 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     AppService.newSearch();
 
   })
-  .controller('SearchResultCtrl', function ($scope, $stateParams, $timeout, $ionicPopup, RoomService, MaskFac, AppService, AppConfigService, $ionicScrollDelegate) {
+  .controller('SearchResultCtrl', function ($scope, $state, $stateParams, $timeout, $ionicPopup, RoomService, MaskFac, AppService, AppConfigService, $ionicScrollDelegate) {
     MaskFac.loadingMask(true, 'Searching');
+
     var param = JSON.parse($stateParams.param);
+
+    console.log('Params from search: ');
     console.log(param);
-    //$scope.imageUrl = "";
+
     var imageUrl = null;
     //get image Url
     RoomService.getImageUrl().then(function (res) {
-      //$scope.imageUrl = res;
       imageUrl = res;
     });
 
@@ -202,6 +273,11 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
     //==end
 
+    // Clearing $stateParams
+    $scope.goBackToSearch = function() {
+        $state.go('tab.search', {scheduleID: null, meetingStart: null, meetingEnd: null, meetingDate: null, meetingSubject: null});
+    }
+
     $scope.lstRoom = [];
     $scope.loadNext = 5;
     $scope.AllRoom = [];
@@ -218,8 +294,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
       angular.forEach(addThese, function (r) {
         $scope.lstRoom.push(r);
       });
-      /*$scope.lstRoom= $scope.AllRoom.slice(0, $scope.lstRoom.length + $scope.loadNext);
-       console.log($scope.lstRoom);*/
+
       $timeout(function () {
         $scope.$broadcast('scroll.infiniteScrollComplete'); //to update the screen
       }, 1000);
@@ -318,7 +393,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     }
 
     function getAllAvailableRooms() {
-      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID).then(function (res) {
+      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID, param.scheduleID, param.equipmentID).then(function (res) {
 
         allRoomsList.rooms = res;
 
@@ -380,98 +455,40 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
       }
     };
 
-    function getSlotDisplayConf(slots) {
-      //if a to b, b to c, f to g -> should display a-> c, f->g
-      var useSlot = "";
-      var isChecked = false;
-      var b = "";
-      var assignedLast = false;
-      //tabulate slots
-      angular.forEach(slots, function (s) {
-        //try and get stretches of time
-
-        if (s.checked) {
-          isChecked = true;
-          if (b != "" && b == s.start) {
-            //this.start == prev.end
-            b = s.end;
-
-          } else {
-            //previous wasn't selected || this.start != prev.end;
-            //this slot can't be linked, throw out b, create new slot
-            useSlot += b;
-
-            b = s.end;
-
-            if (useSlot != "")
-              useSlot += ",<br>";
-
-            useSlot += s.start + " to ";
-
-          }
-          assignedLast = false;
-
-
-        } else {
-          //this slot can't be linked, throw out b, create new slot
-          useSlot += b;
-          assignedLast = true;
-          b = "";//reset b
-        }
-      });
-
-      if (!assignedLast) {
-        useSlot += b;
-      }
-
-      if (!isChecked)
-        useSlot = $scope.slot;
-
-      //return
-      return "Time: <b>" + useSlot + "</b>";
-    }
-
     $scope.lstSelected = [];
 
     $scope.selectTimeSlot = function (slot, slots) {
       if ($scope.lstSelected.length == 1) {
         $scope.lstSelected.push(slot);
-        //console.log($scope.lstSelected);
         groupSlots(slots, $scope.lstSelected[0], $scope.lstSelected[1]);
 
       } else {
         //restart
         $scope.lstSelected = [];
-        /*angular.forEach($scope.lstSelected,function(s){
-                                                                                                                         s.selected=false;
-                                                                                                         });*/
-        //console.log('lstSelected== 2, restart');
+
         $scope.lstSelected.push(slot);
-        //console.log('restart, push slot');
+
         groupSlots(slots, $scope.lstSelected[0], $scope.lstSelected[1] ? $scope.lstSelected[1] : null);
       }
-
-      console.log(slot);
-
     };
 
     //algo to verify valid date range is selected
     function groupSlots(allSlots, _first, _second) {
       var myFirst, mySecond;
       var lstSelected = [];//reset lstSelected
-      //console.log('in group slots');
+
       if (_first && _second) {
-        //console.log('first && second exist');
+
         //start sorting which is start which is end
         //check in between slots
         var f1 = parseInt(_first.originalStart.replace(/([A-Za-z])/g, '').replace(":", ""));
         var f2 = parseInt(_second.originalStart.replace(/([A-Za-z])/g, '').replace(":", ""));
         if (f1 > f2) {
-          //console.log('first > second ' + f1 + '>' + f2);
+
           myFirst = f2;
           mySecond = f1;
         } else {
-          //console.log('first < second ');
+
           myFirst = f1;
           mySecond = f2;
         }
@@ -481,7 +498,6 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
           if (sNum >= myFirst && sNum <= mySecond) {
             if (allSlots[i].status == 'vacant') {
-              //console.log({sNUmIs:sNum, myFNum:myFirst, mySNum:mySecond});
               allSlots[i].checked = true;
               lstSelected.push(allSlots[i]);
             } else {
@@ -502,7 +518,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
           }
         }
       } else {
-        //console.log('not all exist, erase slots');
+
         lstSelected = [];
         //reset
         angular.forEach(allSlots, function (s) {
@@ -523,9 +539,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     }
 
     $scope.reserve = function (id, name, slots, enforceDefaultSelection) {
-
-
-      var useSlot = "";
+      var useSlot = '';
 
       var isSlotChecked = false;
       if (enforceDefaultSelection) {
@@ -550,6 +564,12 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
         }
       }
 
+      // If the scheduleID data comes from reservation, there must be subject data too
+      if(param.scheduleID) {
+        $scope.reserve.des = param.subject;
+      } else {
+        $scope.reserve.des = '';
+      }
 
       if (isSlotChecked === true) {
 
@@ -590,7 +610,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
         mypopup.then(function (res) {
           if (res) {
-            //callReservation(id, res);
+
             MaskFac.loadingMask(true, 'Processing');
             var selectedSlots = [];
             var todayDate = getFormatDate(param.date);
@@ -603,12 +623,10 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
               angular.forEach(slots, function (s) {
                 if (s.checked) {
                   selectedSlots.push({'start': s.start, 'end': s.end});
-                  console.log("selectedSlots->%s", JSON.stringify(selectedSlots));
                 }
               });
             }
 
-            console.warn(selectedSlots);
             var start = selectedSlots[0].start;
             var end = selectedSlots[selectedSlots.length - 1].end;
             var subject = res;

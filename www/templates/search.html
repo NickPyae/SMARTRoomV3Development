@@ -1,6 +1,6 @@
 <ion-view>
 	<ion-nav-title class="light">
-		Room Reservation
+		Search and Reserve
 	</ion-nav-title>
 	<ion-nav-buttons side="right">
     <button class="button button-clear button-light" ng-click="search(options)" ng-disabled="progress.current !=progress.max || !validated">
@@ -35,19 +35,19 @@
           <input type="time" ng-model="options.end">
 
         </ion-item>
-        <ion-item class="item item-input-inset item-select" style="margin-right: 20px;">
-          <span class="input-label" style="margin-left: 10px;">
-            Repeat
-          </span>
-          <select ng-options="event as event.frequency for event in recurringEvents" ng-model="recurringEvents.event">
-          </select>
-        </ion-item>
+        <!--<ion-item class="item item-input-inset item-select" style="margin-right: 20px;">-->
+          <!--<span class="input-label" style="margin-left: 10px;">-->
+            <!--Repeat-->
+          <!--</span>-->
+          <!--<select ng-options="event as event.frequency for event in recurringEvents" ng-model="recurringEvents.event">-->
+          <!--</select>-->
+        <!--</ion-item>-->
       </div>
 
       <ion-item class="item item-divider" ng-class="{active: showOrHideLocation}" ng-click="toggleLocation()">
         <i class="icon" ng-class="showOrHideLocation ? 'ion-arrow-down-b' : 'ion-arrow-right-b'"></i>
         &nbsp;
-        Location Details
+        Filters
       </ion-item>
 
       <div class="card" ng-if="showOrHideLocation">
@@ -70,7 +70,8 @@
           <span class="input-label" style="margin-left: 10px;">
             Equipment
           </span>
-          <select>
+          <select
+            ng-init="selectedEquipment.item" ng-options="o.displayName for o in equipments" ng-model="selectedEquipment.item">
           </select>
         </ion-item>
         <ion-item class="item item-input my-list-input">

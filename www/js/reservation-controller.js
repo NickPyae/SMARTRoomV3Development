@@ -228,11 +228,10 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
     //$scope.imageUrl = res;
     imageUrl = res;
   });
-  console.log('enter reservation-controller.js');
+
   $scope.getImage = function (siteID, path) {
     if (imageUrl) {
       if (siteID && path) {
-        console.log("siteID:%s, path:%s", siteID, path);
         return imageUrl + '/' + siteID + '/' + path;
       } else {
         return './img/noimageavailable.png';
@@ -242,6 +241,7 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
       return '';
     }
   };
+
   $scope.fullScreen = function (url) {
     MaskFac.imageMask(url);
   };
@@ -256,7 +256,6 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
         MaskFac.loadingMask(false);
       }, 500);
     }, function (errRes) {
-      console.log(JSON.stringify(errRes));
       MaskFac.loadingMask(false);
       MaskFac.showMask(MaskFac.error, "Oops an error occured. <br>Please try again");
       $timeout(function () {
@@ -276,7 +275,6 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
         MaskFac.loadingMask(false);
       }, 500);
     }, function (errRes) {
-      console.log(JSON.stringify(errRes));
       MaskFac.loadingMask(false);
       MaskFac.showMask(MaskFac.error, "Oops an error occured. <br>Please try again");
       $timeout(function () {
@@ -291,7 +289,6 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
   };
 
   $scope.attendeeInfo = function (a) {
-    console.log(a);
     var buttonConfig = [];
     if (!a.num)//do nothing if no information available
       return;
@@ -504,10 +501,10 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
       title: 'Update Reservation ',
       scope: $scope,
       buttons: [
-        {text: 'Cancel'},
+        {text: 'Cancel', type: 'button button-small'},
         {
-          text: '<b>Update</b>',
-          type: 'button-positive',
+          text: '<b>Update Subject</b>',
+          type: 'button button-small button-positive',
           onTap: function (e) {
             if ($scope.newSubject.desc && $scope.newSubject.desc != '') {
               return $scope.newSubject.desc;
@@ -515,26 +512,46 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
               e.preventDefault();
             }
           }
+        },
+        {
+          text: '<b>Update Datetime</b>',
+          type: 'button button-small button-positive',
+          onTap: function (e) {
+            $state.go('tab.search', {scheduleID: meeting.id, meetingStart: meeting.start, meetingEnd: meeting.end, meetingDate: meeting.reservedDate, meetingSubject: $scope.newSubject.desc});
+          }
         }
       ]
     });
 
-    mypopup.then(function (subject) {
-      if (subject) {
-        console.log('New Subject: ' + subject);
-
+    mypopup.then(function (newSubject) {
+      if (newSubject) {
         MaskFac.loadingMask(true, 'Updating');
 
-        $timeout(function () {
-          $scope.newSubject.desc = '';
-          MaskFac.loadingMask(false);
-          MaskFac.showMask(MaskFac.success, "Updating reservation successful.");
-        }, 2000);
+        RoomService.updateSubject(meeting.id, getTodayDate(), meeting.start, meeting.end, newSubject)
+          .then(function (res) {
+            $scope.newSubject.desc = '';
+
+            // Refresh page
+            initDetails();
+
+            MaskFac.loadingMask(false);
+
+            MaskFac.showMask(MaskFac.success, 'Updating subject successful.');
+          }, function (errRes) {
+            MaskFac.loadingMask(false);
+            MaskFac.showMask(MaskFac.error, 'Error updating subject. Please try again');
+          });
+
       } else {
         $scope.newSubject.desc = '';
-        console.log('Cancel');
       }
     });
+  }
+
+  function getTodayDate() {
+    //yyyy-mm-dd
+    var d = new Date();
+    return d.getFullYear() + "-" + pad((d.getMonth() + 1), 2) + "-" + pad(d.getDate(), 2);
   }
 
   function formatDate(date) {

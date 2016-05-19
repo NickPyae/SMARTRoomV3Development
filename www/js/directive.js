@@ -21,24 +21,8 @@ angular.module('app.directives', [])
   };
 })
 .directive('roomCard',function() {
-    //requires a roomInfo object
   return {
-    /*restrict: 'A',
-    scope: {
-      r: '='
-    },*/
     templateUrl: "templates/room-template.html"
-    /*,
-    controller:function( $scope, RoomService){
-        $scope.roomCss=function(status){
-            return  RoomService.getRoomCss(status);
-        };
-
-        $scope.imageUrl = "";
-         RoomService.getImageUrl().then(function(res){
-            $scope.imageUrl = res;
-        });
-    }*/
   };
 })
 .directive('bugFix',function(){

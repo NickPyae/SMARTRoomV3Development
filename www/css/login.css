@@ -1,10 +1,10 @@
-@keyframes bounce-me {  
+@keyframes bounce-me {
    0%{
 	   	transform:translateY(200%);
    	}
 	80%{
    		transform:translateY(30%);
-   	}   
+   	}
    	90%{
    		transform:translateY(40%);
    	}
@@ -12,14 +12,14 @@
    		transform:translateY(30%);
    	}
 
-}   
-@-webkit-keyframes bounce-me {  
+}
+@-webkit-keyframes bounce-me {
     0%{
 	   	transform:translateY(200%);
    	}
 	80%{
    		transform:translateY(30%);
-   	}   
+   	}
    	90%{
    		transform:translateY(40%);
    	}
@@ -27,7 +27,7 @@
    		transform:translateY(30%);
    	}
 
-}  
+}
  .test.ng-enter{
  	-webkit-animation:1.5s bounce-me;
  	animation:1.5s bounce-me;
@@ -62,7 +62,7 @@
   /*-webkit-transition:all linear 0.5s;
   transition:all linear 0.5s;*/
   overflow-y: hidden;
-	max-height: 500px; 
+	max-height: 500px;
 
 	transition-property: all;
 	transition-duration: .5s;
@@ -72,6 +72,12 @@
 .sample-show-hide.ng-hide {
  opacity:0;
 }
+
 .slider.closed {
 	max-height: 0;
+}
+
+
+.item-stacked-label span {
+  color: white;
 }
