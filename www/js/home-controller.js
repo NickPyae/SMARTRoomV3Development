@@ -200,7 +200,7 @@ app.controller('HomeCtrl', function ($rootScope, $scope, $q, $timeout, RoomServi
       }
     };
 
-    $scope.fullScreen=function(url){
+    $scope.fullScreen = function(url) {
       MaskFac.imageMask(url);
     };
 

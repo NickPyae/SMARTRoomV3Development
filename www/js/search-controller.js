@@ -195,6 +195,12 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
         options.floorID = $scope.userSettings.levelFilter.floorID;
       }
 
+      if(!$scope.userSettings.siteFilter.value) {
+        options.siteID = '';
+      } else {
+        options.siteID = $scope.userSettings.siteFilter.value;
+      }
+
       $state.go('tab.search-result', {param: JSON.stringify(options)});
     };
     AppService.newSearch();
@@ -393,9 +399,10 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     }
 
     function getAllAvailableRooms() {
-      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID, param.scheduleID, param.equipmentID).then(function (res) {
+      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID, param.siteID, param.scheduleID, param.equipmentID).then(function (res) {
 
         allRoomsList.rooms = res;
+
 
         if ($scope.filterOn) {
 
@@ -424,10 +431,14 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
           $scope.AllRoom = allRoomsList.rooms;
         }
 
-        $scope.lstRoom = $scope.AllRoom.slice(0, $scope.loadNext + 5);
-        $ionicScrollDelegate.$getByHandle('mainScroll').scrollTop();
         MaskFac.loadingMask(false);
 
+        if(res.length === 0) {
+          MaskFac.showMask(MaskFac.warning, 'No available rooms');
+        }
+
+        $scope.lstRoom = $scope.AllRoom.slice(0, $scope.loadNext + 5);
+        $ionicScrollDelegate.$getByHandle('mainScroll').scrollTop();
       }, function (errRes) {
         MaskFac.loadingMask(false);
         MaskFac.showMask(MaskFac.error, 'Searching rooms failed');

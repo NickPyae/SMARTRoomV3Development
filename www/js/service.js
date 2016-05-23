@@ -549,7 +549,7 @@ angular.module('app.services', [])
 	}
 
 	//for search-controller.js
-	self.getAvailableRooms = function(_date, start, end, pax, floorID, scheduleID, equipmentID){
+	self.getAvailableRooms = function(_date, start, end, pax, floorID, siteID, scheduleID, equipmentID){
 		var def=$q.defer();
 		var useDate = formatDate(_date);
 
@@ -561,7 +561,7 @@ angular.module('app.services', [])
     var encodedEndTime = btoa(formatHourMin(end));
     var encodedFloorID = btoa(floorID);
     var encodedEquipmentID = btoa(equipmentID);
-
+    var encodedSiteID = btoa(siteID);
 
     //Saving scheduleID from reservedRoom
     self.setReservedScheduleID(scheduleID);
@@ -575,6 +575,7 @@ angular.module('app.services', [])
         "&StartTime=" + encodedStartTime +
         "&EndTime=" + encodedEndTime +
         "&Floor=" + encodedFloorID +
+        "&Site=" + encodedSiteID +
         "&Equipment=" + encodedEquipmentID;
 
 			console.log('Search url: ' + url);
