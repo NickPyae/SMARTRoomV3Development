@@ -556,7 +556,7 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
 
   function formatDate(date) {
     var d = new Date(date);
-    return pad(d.getDate(), 2) + "-" + pad((d.getMonth() + 1), 2) + "-" + d.getFullYear() + " (today)";
+    return pad(d.getDate(), 2) + "-" + pad((d.getMonth() + 1), 2) + "-" + d.getFullYear();
   }
 
   function pad(n, width, z) {

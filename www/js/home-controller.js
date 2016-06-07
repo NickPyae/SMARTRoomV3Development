@@ -324,7 +324,7 @@ app.controller('HomeCtrl', function ($rootScope, $scope, $q, $timeout, RoomServi
 
     function formatedDate() {
       var d = new Date();
-      return pad(d.getDate(), 2) + "-" + pad((d.getMonth() + 1), 2) + "-" + d.getFullYear() + " (today)";
+      return pad(d.getDate(), 2) + "-" + pad((d.getMonth() + 1), 2) + "-" + d.getFullYear();
     }
 
 
