@@ -115,8 +115,7 @@ app.controller('HomeCtrl', function ($rootScope, $scope, $q, $timeout, RoomServi
         } else {
           return './img/noimageavailable.png';
         }
-      }
-      else {
+      } else {
         return '';
       }
     };

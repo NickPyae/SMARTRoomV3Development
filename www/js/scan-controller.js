@@ -17,7 +17,7 @@ app.controller('ScanCtrl',function($scope, $q, $timeout, $state, $ionicPopup, Ap
 					angular.forEach(options, function(option) {
 						if(angular.lowercase(option.Action) === 'prompt') {
 							var alertPopup = $ionicPopup.alert({
-								title: 'SMARTROOM',
+								title: 'SMARTRoom',
 								template: option.Msg
 							});
 						}
@@ -37,7 +37,7 @@ app.controller('ScanCtrl',function($scope, $q, $timeout, $state, $ionicPopup, Ap
 						// Action being empty string
 						if(!angular.lowercase(option.Action)) {
 							var alertPopup = $ionicPopup.alert({
-								title: 'SMARTROOM',
+								title: 'SMARTRoom',
 								template: 'Room not available.'
 							});
 						}

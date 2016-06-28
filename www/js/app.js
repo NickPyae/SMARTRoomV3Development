@@ -99,7 +99,7 @@ app.run(function($ionicPlatform, CredentialService, ServerConfig, AppConfigServi
           if(data.additionalData.foreground) {
 
             $ionicPopup.alert({
-              title: 'SMARTROOM Notification',
+              title: 'SMARTRoom Notification',
               template: data.message
             });
           }
@@ -128,7 +128,8 @@ app.run(function($ionicPlatform, CredentialService, ServerConfig, AppConfigServi
       }
     };
 
-    app.initialize();
+    // Remove this push notification feature for now
+    //app.initialize();
 
   });
 });
