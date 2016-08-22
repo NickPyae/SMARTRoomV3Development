@@ -10,6 +10,11 @@ app.controller('LoginCtrl',function($rootScope, $scope, $state, $timeout, MaskFa
 		 }else{
 		 	//get server ip from stored
 		 	$scope.ip=CredentialService.getIp();
+
+      if(!$scope.ip) {
+          $scope.ip = 'smartroom.mediacorp.com.sg';
+      }
+
 		 	$scope.loadLogin=true;
 		 	$scope.logginState = false;
 		 	MaskFac.loadingMask(false);
@@ -46,7 +51,7 @@ app.controller('LoginCtrl',function($rootScope, $scope, $state, $timeout, MaskFa
 	}
 
   $scope.enableHTTPS = {
-      checked: CredentialService.isHttpsEnabled()//false
+      checked: CredentialService.isHttpsEnabled() // Default https on
   };
 
 	//CredentialService
