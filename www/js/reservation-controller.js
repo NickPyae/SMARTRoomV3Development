@@ -1,4 +1,5 @@
-app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, RoomService, MaskFac, ServerConfig, $cordovaNetwork, $ionicFilterBar) {
+app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, RoomService, MaskFac, ServerConfig,
+                                            $cordovaNetwork, $ionicFilterBar, $ionicPopover) {
 
   document.addEventListener('deviceready', function () {
     // listen for Online event
@@ -7,6 +8,23 @@ app.controller('ReservationCtrl', function ($rootScope, $scope, $q, $timeout, Ro
     });
 
   }, false);
+
+  $ionicPopover.fromTemplateUrl('templates/popover.html', {
+    scope: $scope,
+  }).then(function (popover) {
+    $scope.popover = popover;
+  });
+
+  $scope.filters = [
+    {
+      item: 'Rooms',
+      isChecked: true
+    },
+    {
+      item: 'Desks',
+      isChecked: true
+    }
+  ];
 
   $scope.rooms = [];
 

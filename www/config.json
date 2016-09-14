@@ -19,9 +19,12 @@
   "scheduleslot": "/mobile/scheduleslots",
 	"simulate": false,
 	"landingpageoptions":
-		[{"displayName":"Rooms","value":"tab.home"},
-		{"displayName":"Reservations","value":"tab.reservation"},
-		{"displayName":"Scan","value":"tab.scan"},
-		{"displayName":"New Booking","value":"tab.search"},
-		{"displayName":"Settings","value":"tab.setting"}]
+		[
+      {"displayName":"Rooms","value":"tab.home"},
+      {"displayName":"Desks","value":"tab.desk"},
+      {"displayName":"Reservations","value":"tab.reservation"},
+      {"displayName":"Scan","value":"tab.scan"},
+		  {"displayName":"Search","value":"tab.search"},
+		  {"displayName":"Settings","value":"tab.setting"}
+    ]
 }

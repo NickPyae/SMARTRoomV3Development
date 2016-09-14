@@ -1,0 +1,37 @@
+<ion-view>
+  <ion-nav-title class="light">
+    <b>Desks</b>
+  </ion-nav-title>
+  <ion-nav-buttons side="right">
+    <button class="button button-icon icon ion-android-refresh"
+            ng-click="loadDesks()">
+    </button>
+    <button class="button button-clear button-light" ng-click="filterClick()">
+      {{filterOn ? "Filtered" : "All"}}
+    </button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="left">
+    <button class="button button-icon icon ion-ios-search-strong" ng-click="showFilterBar()">
+    </button>
+  </ion-nav-buttons>
+
+  <ion-content has-bouncing="false" delegate-handle="mainScroll">
+    <div>
+      <h3 style="text-align: center;">Desk plan L6</h3>
+      <ion-scroll zooming="true" direction="xy" scrollbar-x="false" scrollbar-y="false" min-zoom="1"
+                  style="width: 100%; height: 80%;top:10%;">
+        <svg id="svgContainer1" width="100%" height="100%" viewBox="0 0 1000 550.00002">
+        </svg>
+      </ion-scroll>
+    </div>
+    <br/>
+    <div>
+      <h3 style="text-align: center;">Desk plan L7</h3>
+      <ion-scroll zooming="true" direction="xy" scrollbar-x="false" scrollbar-y="false" min-zoom="1"
+                  style="width: 100%; height: 80%;top:10%;">
+        <svg id="svgContainer2" width="100%" height="100%" viewBox="0 0 1000 550.00002">
+        </svg>
+      </ion-scroll>
+    </div>
+  </ion-content>
+</ion-view>

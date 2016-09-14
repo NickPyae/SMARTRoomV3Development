@@ -6,6 +6,9 @@
     <button class="button button-icon icon ion-android-refresh"
             ng-click="loadReservations()">
     </button>
+    <button class="button button-icon icon ion-android-more-vertical"
+            ng-click="popover.show($event)">
+    </button>
   </ion-nav-buttons>
   <ion-nav-buttons side="left">
     <button class="button button-icon icon ion-ios-search-strong" ng-click="showFilterBar()">
@@ -38,3 +41,15 @@
     </div>
   </ion-content>
 </ion-view>
+
+<script id="templates/popover.html" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+      <div class="list">
+        <ion-checkbox ng-repeat="filter in filters"
+                      ng-model="filter.isChecked">
+          {{ filter.item }}
+      </div>
+    </ion-content>
+  </ion-popover-view>
+</script>

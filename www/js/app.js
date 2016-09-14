@@ -190,6 +190,16 @@ app.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider, $i
         }
       }
     })
+    .state('tab.desk',{
+      url: "/desk",
+      cache:false,
+      views:{
+        'tab-desk': {
+          templateUrl: "./templates/desk.html",
+          controller: "DeskCtrl"
+        }
+      }
+    })
     .state('tab.reservation',{
       url: "/reservation",
       cache:false,

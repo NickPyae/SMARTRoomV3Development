@@ -994,34 +994,36 @@ angular.module('app.services', [])
 			return password;
 		}
 
-    //Lara 11Feb16: added - return http protocol based on boolean param
-    self.getHttpProtocol=function(isHttps){
-      return isHttps?"https" : "http";
+    // Return http protocol based on boolean param
+    self.getHttpProtocol = function(isHttps) {
+      return isHttps ? "https" : "http";
     };
 
-  //Lara 11Feb16: added - return boolean whether protocol is https
-  //  self.isHttpsEnabled=function(){
-  //    var isHttps=localStorage.getItem("isHttps");
-  //
-  //    if(isHttps=="" || isHttps==null){
-  //      isHttps=localStorage.isHttps;
-  //    }
-  //
-  //    return isHttps == 'https' ? true : false;
-  //  };
+    // Return boolean whether protocol is https
+    self.isHttpsEnabled = function(){
+      var isHttps=localStorage.getItem("isHttps");
 
-    self.isHttpsEnabled = function() {
+      if(isHttps == "" || isHttps == null){
+        isHttps = localStorage.isHttps;
+      }
 
-        if(!localStorage.getItem('isHttps')) {
-            return true;
-        } else {
-          if(localStorage.getItem('isHttps') === 'https') {
-            return true;
-          } else {
-            return false;
-          }
-        }
+      return isHttps == 'https' ? true : false;
     };
+
+    // Uncomment this if Mediacorp wants to prepopulate HTTPS by default.
+    // Comment above self.isHttpsEnabled
+    //self.isHttpsEnabled = function() {
+    //
+    //    if(!localStorage.getItem('isHttps')) {
+    //        return true;
+    //    } else {
+    //      if(localStorage.getItem('isHttps') === 'https') {
+    //        return true;
+    //      } else {
+    //        return false;
+    //      }
+    //    }
+    //};
 
     self.getIp=function(){
 	    	var ret = localStorage.getItem("serverip");

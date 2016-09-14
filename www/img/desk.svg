@@ -1,0 +1,55 @@
+<svg width="100%" height="100%" viewBox="0 0 580 480" preserveAspectRatio="xMaxYMax" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="layer">
+   <rect id="desk_1" height="42" width="65" y="75.125" x="93.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_2" height="42" width="65" y="75.125" x="172.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_7" height="42" width="65" y="143.875" x="172.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_8" height="42" width="65" y="143.875" x="255.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_6" height="42" width="65" y="143.875" x="93.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_4" height="42" width="65" y="75.125" x="341.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_3" height="42" width="65" y="75.125" x="255.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_9" height="42" width="65" y="143.875" x="341.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_14" height="42" width="65" y="215.375" x="341.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_19" height="42" width="65" y="282.875" x="341.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_12" height="42" width="65" y="215.375" x="172.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_11" height="42" width="65" y="215.375" x="93.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_13" height="42" width="65" y="215.375" x="255.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_16" height="42" width="65" y="282.875" x="93.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_18" height="42" width="65" y="282.875" x="255.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_17" height="42" width="65" y="282.875" x="172.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_18" y="101.125" x="105.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-1</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_19" y="101.125" x="353.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-4</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_20" y="101.125" x="185.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-2</text>
+   <text style="cursor: move;" stroke="#000" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_21" y="169.125" x="105.5" stroke-opacity="null" stroke-width="0" fill="#000000">Desk-6</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_22" y="101.125" x="269.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-3</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_23" y="169.125" x="185.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-7</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_24" y="168.125" x="269.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-8</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_25" y="169.125" x="355.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-9</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_26" y="241.125" x="104.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-11</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_27" y="240.625" x="184.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-12</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_28" y="241.125" x="268.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-13</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_29" y="242.125" x="352.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-14</text>
+   <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_30" y="308.125" x="104.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-16</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_31" y="308.125" x="183.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-17</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_32" y="309.125" x="266.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-18</text>
+   <text stroke="#000" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_33" y="309.125" x="351.382813" stroke-opacity="null" stroke-width="0" fill="#000000">Desk-19</text>
+   <rect id="desk_5" height="42" width="65" y="75.125" x="421.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_10" height="42" width="65" y="143.875" x="421.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_15" height="42" width="65" y="215.375" x="421.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <rect id="desk_20" height="42" width="65" y="282.875" x="421.5" stroke-width="1.5" stroke="#000" fill="#0a84ff"/>
+   <text style="cursor: move;" stroke="#000" xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_39" y="103.125" x="436.5" stroke-opacity="null" stroke-width="0" fill="#000000">Desk-5</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_40" y="169.125" x="430.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-10</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_41" y="241.125" x="433.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-15</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'League Gothic', sans-serif" font-size="12" id="svg_42" y="309.125" x="433.5" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">Desk-20</text>
+  </g>
+ </g>
+</svg>
