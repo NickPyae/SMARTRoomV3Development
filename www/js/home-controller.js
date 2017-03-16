@@ -390,12 +390,18 @@ app.controller('HomeCtrl', function ($rootScope, $scope, $q, $timeout, RoomServi
           RoomService.reserveRoom(id, todayDate, start, end, subject)
             .then(function (res) {
               MaskFac.loadingMask(false);
-              MaskFac.showMask(MaskFac.success, "Reservation successful.");
-              //Lara  10Feb16: allow page to show room reserved mask before transitting
+
+              if(res.status.toLowerCase() === 'pending') {
+                MaskFac.showMask(MaskFac.success, "Booking of your meeting room is pending admin approval.");
+              } else {
+                MaskFac.showMask(MaskFac.success, "Reservation successful.");
+              }
+
+              //Allow page to show room reserved mask before transition
               $timeout(function(){
                 //go to reservations
                 AppService.eventSuccess('room-reserved');
-              },1000);
+              },1200);
 
             }, function (errRes) {
               MaskFac.showMask(MaskFac.error, "Error reserving room. Please try again");

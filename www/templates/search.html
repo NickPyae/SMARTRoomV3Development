@@ -1,14 +1,14 @@
 <ion-view>
-	<ion-nav-title class="light">
-		Search and Reserve
-	</ion-nav-title>
-	<ion-nav-buttons side="right">
-    <button class="button button-clear button-light" ng-click="search(options)" ng-disabled="progress.current !=progress.max || !validated">
+  <ion-nav-title class="light">
+    Search and Reserve
+  </ion-nav-title>
+  <ion-nav-buttons side="right">
+    <button class="button button-clear button-light" ng-click="search(options)" ng-disabled="!validated">
       Search
     </button>
-	</ion-nav-buttons>
-	<ion-content has-bouncing="false">
-		<div class="list">
+  </ion-nav-buttons>
+  <ion-content has-bouncing="false">
+    <div class="list">
       <ion-item class="item item-divider" ng-class="{active: showOrHideDateTime}" ng-click="toggleDateTime()">
         <i class="icon" ng-class="showOrHideDateTime ? 'ion-arrow-down-b' : 'ion-arrow-right-b'"></i>
         &nbsp;
@@ -35,13 +35,18 @@
           <input type="time" ng-model="options.end">
 
         </ion-item>
-        <!--<ion-item class="item item-input-inset item-select" style="margin-right: 20px;">-->
-          <!--<span class="input-label" style="margin-left: 10px;">-->
-            <!--Repeat-->
-          <!--</span>-->
-          <!--<select ng-options="event as event.frequency for event in recurringEvents" ng-model="recurringEvents.event">-->
-          <!--</select>-->
-        <!--</ion-item>-->
+        <ion-item class="item item-input-inset item-select" style="margin-right: 20px;">
+          <span class="input-label" style="margin-left: 10px;">
+            Repeat
+          </span>
+          <select ng-options="item as item.frequency for item in recurring" ng-model="recurring.item">
+          </select>
+        </ion-item>
+        <ion-item ng-show="recurring.item.frequency !== 'Never'" class="item item-input my-list-input">
+          <span class="input-label">End Repeat</span>
+          <i class="ion-ios7-calendar placeholder-icon icon"></i>
+          <input type="date" ng-model="options.endRepeatDate">
+        </ion-item>
       </div>
 
       <ion-item class="item item-divider" ng-class="{active: showOrHideLocation}" ng-click="toggleLocation()">
@@ -80,11 +85,11 @@
           <input type="number" ng-model="options.seats">
         </ion-item>
       </div>
-			<!-- Error Validation Message -->
-			<ion-item class="item-divider assertive msg-validation" ng-if="!validated">
-			 	{{errorMsg}}
-			</ion-item>
-		</div>
+      <!-- Error Validation Message -->
+      <ion-item class="item-divider assertive msg-validation" ng-if="!validated">
+        {{errorMsg}}
+      </ion-item>
+    </div>
 
-	</ion-content>
+  </ion-content>
 </ion-view>

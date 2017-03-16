@@ -301,10 +301,4 @@ and (-webkit-device-pixel-ratio : 3) {
 }
 
 
-/** Overwrite default popover height */
-.popover  {
-  height: 120px;
-}
-
-
 

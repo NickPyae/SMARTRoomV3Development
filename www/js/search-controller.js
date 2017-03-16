@@ -36,7 +36,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
         $scope.equipments = equipmentsList;
 
         $scope.selectedEquipment = {
-            item: $scope.equipments[0]
+          item: $scope.equipments[0]
         }
 
         MaskFac.loadingMask(false);
@@ -47,17 +47,15 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
     }
 
-    $scope.recurringEvents = getRecurringEvents();
-    $scope.recurringEvents.event = $scope.recurringEvents[0];
+    $scope.recurring = getRecurring();
+    $scope.recurring.item = $scope.recurring[0];
 
-    function getRecurringEvents() {
+    function getRecurring() {
       return [
         {frequency: 'Never'},
-        {frequency: 'Every Day'},
-        {frequency: 'Every Week'},
-        {frequency: 'Every 2 Weeks'},
-        {frequency: 'Every 3 Weeks'},
-        {frequency: 'Every Month'}
+        {frequency: 'Daily'},
+        {frequency: 'Weekly'},
+        {frequency: 'Monthly'}
       ];
     }
 
@@ -65,7 +63,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     $scope.showOrHideLocation = true;
 
     $scope.toggleDateTime = function () {
-        $scope.showOrHideDateTime = !$scope.showOrHideDateTime;
+      $scope.showOrHideDateTime = !$scope.showOrHideDateTime;
     };
 
     $scope.toggleLocation = function() {
@@ -119,7 +117,8 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
           date: now,
           start: getRoomReservedTime(now, $stateParams.meetingStart), //Star Time
           end: getRoomReservedTime(now, $stateParams.meetingEnd), //End Time
-          seats: 1
+          seats: 1,
+          endRepeatDate: new Date()
         };
       } else {
         var now = new Date();
@@ -128,17 +127,13 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
           date: now,
           start: getClosestHalf(now, false),
           end: getClosestHalf(now, true),
-          seats: 1
+          seats: 1,
+          endRepeatDate: now
         };
       }
 
     });
 
-    $scope.progress = {
-      current: 0,
-      step: 25,
-      max: 100
-    };
     //==Validation
     $scope.validated = true;
     $scope.errorMsg = "";
@@ -150,15 +145,8 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
       }
     }
 
-    //progress validation
-    $scope.$watch('options', function (nv) {
-      var total = 0;
-      angular.forEach(nv, function (item) {
-        if (item && item != "") {
-          total += $scope.progress.step;
-        }
-      });
 
+    $scope.$watch('options', function (nv) {
       //time/seats validation
       if (!timeValidate(nv.start, nv.end)) {
         $scope.errorMsg = "Start Time must be earlier than End Time";
@@ -169,8 +157,6 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
       } else {
         $scope.validated = true;
       }
-      //Maintain search on back
-      $scope.progress.current = total;
     }, true);
     //==End Validation
 
@@ -178,9 +164,9 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     $scope.search = function (options) {
 
       if($scope.selectedEquipment.item.value) {
-          options.equipmentID = $scope.selectedEquipment.item.equipmentID;
+        options.equipmentID = $scope.selectedEquipment.item.equipmentID;
       } else {
-          options.equipmentID = '';
+        options.equipmentID = '';
       }
 
       if($stateParams.scheduleID) {
@@ -188,7 +174,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
         options.scheduleID = $stateParams.scheduleID;
       }
 
-      //console.log('Recurring Event: ' + $scope.recurringEvents.event.frequency);
+
       if (!$scope.userSettings.levelFilter.value) {
         options.floorID = '';
       } else {
@@ -199,6 +185,14 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
         options.siteID = '';
       } else {
         options.siteID = $scope.userSettings.siteFilter.value;
+      }
+
+      if($scope.recurring.item.frequency === 'Never') {
+        options.repeat = '';
+        options.isRecurrence = 'false';
+      } else {
+        options.repeat = $scope.recurring.item.frequency;
+        options.isRecurrence = 'true';
       }
 
       $state.go('tab.search-result', {param: JSON.stringify(options)});
@@ -281,7 +275,7 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
 
     // Clearing $stateParams
     $scope.goBackToSearch = function() {
-        $state.go('tab.search', {scheduleID: null, meetingStart: null, meetingEnd: null, meetingDate: null, meetingSubject: null});
+      $state.go('tab.search', {scheduleID: null, meetingStart: null, meetingEnd: null, meetingDate: null, meetingSubject: null});
     }
 
     $scope.lstRoom = [];
@@ -399,10 +393,10 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
     }
 
     function getAllAvailableRooms() {
-      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID, param.siteID, param.scheduleID, param.equipmentID).then(function (res) {
+      RoomService.getAvailableRooms(param.date, param.start, param.end, param.seats, param.floorID,
+        param.siteID, param.scheduleID, param.equipmentID, param.repeat, param.endRepeatDate, param.isRecurrence).then(function (res) {
 
         allRoomsList.rooms = res;
-
 
         if ($scope.filterOn) {
 
@@ -645,12 +639,18 @@ app.controller('SearchCtrl', function ($rootScope, $scope, $state, $stateParams,
             RoomService.reserveRoom(id, todayDate, start, end, subject)
               .then(function (res) {
                 MaskFac.loadingMask(false);
-                MaskFac.showMask(MaskFac.success, "Reservation successful.");
-                //Lara  10Feb16: allow page to show room reserved mask before transitting
+
+                if(res.status.toLowerCase() === 'pending') {
+                  MaskFac.showMask(MaskFac.success, "Booking of your meeting room is pending admin approval.");
+                } else {
+                  MaskFac.showMask(MaskFac.success, "Reservation successful.");
+                }
+
+                // Allow page to show room reserved mask before transition
                 $timeout(function () {
                   //go to reservations
                   AppService.eventSuccess('room-reserved');
-                }, 1000);
+                }, 1200);
 
               }, function (errRes) {
                 MaskFac.showMask(MaskFac.error, "Error reserving room. Please try again");

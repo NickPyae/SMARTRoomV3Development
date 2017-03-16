@@ -5,7 +5,7 @@ app.controller('DeskCtrl', function ($rootScope, $scope, $state, $ionicFilterBar
 
   //var s = Snap("#svgContainer");
   //
-  //Snap.load("img/desk.svg", onSVGLoaded) ;
+  //Snap.load("./img/desk.svg", onSVGLoaded) ;
   //
   //function onSVGLoaded( data ){
   //    s.append(data);
@@ -33,7 +33,7 @@ app.controller('DeskCtrl', function ($rootScope, $scope, $state, $ionicFilterBar
 
   //var s = Snap('#svgContainer');
   //
-  //Snap.load('img/desk.svg', function (f) {
+  //Snap.load('./img/desk.svg', function (f) {
   //
   //  var layer0 = f.select('#layer');
   //  var original_size = 40;
@@ -86,7 +86,7 @@ app.controller('DeskCtrl', function ($rootScope, $scope, $state, $ionicFilterBar
 
   var s1 = Snap('#svgContainer1');
 
-  Snap.load('img/deskplan_l6_nopointer.svg', function (f) {
+  Snap.load('./img/deskplan_l6_nopointer.svg', function (f) {
 
     var layer0 = f.select('#layer1');
     var original_size = 40;
@@ -114,8 +114,6 @@ app.controller('DeskCtrl', function ($rootScope, $scope, $state, $ionicFilterBar
         //alert('DESK ID: "' + rect.attr('id'));
 
       });
-
-
     });
 
     s1.append(f);
@@ -124,7 +122,7 @@ app.controller('DeskCtrl', function ($rootScope, $scope, $state, $ionicFilterBar
 
   var s2 = Snap('#svgContainer2');
 
-  Snap.load('img/deskplan_l7_nopointer.svg', function (f) {
+  Snap.load('./img/deskplan_l7_nopointer.svg', function (f) {
 
     var layer0 = f.select('#layer1');
     var original_size = 40;
